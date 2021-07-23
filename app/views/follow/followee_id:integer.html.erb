@@ -1,0 +1,9 @@
+<%= form_with model: @article.id do |form| %>
+  <div>
+    <%= form.label :followees %><br>
+    <%= form.text_field :followees %>
+    <% @article.errors.full_messages_for(:followees).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+<% end %>
