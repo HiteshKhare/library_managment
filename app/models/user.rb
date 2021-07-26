@@ -2,7 +2,9 @@ class User < ApplicationRecord
   has_many :articles, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :followers, foreign_key: "followee_id", class_name: 'Follow'
+  # has_many :followees, through: :followers
   has_many :following, foreign_key: "follower_id", class_name: 'Follow'
+  # has_many :followers, through: :following
   validates :email, uniqueness: { case_sensitive: true }
   validates :email, presence: true
   # Include default devise modules. Others available are:

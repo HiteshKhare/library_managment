@@ -1,5 +1,6 @@
 class ArticlesController < ApplicationController
   def index
+
     @articles = Article.all
   end
 
@@ -32,7 +33,7 @@ class ArticlesController < ApplicationController
   def update
     @article = Article.find_by(id: params[:id])
     @article.avatar.attach(params[:article][:avatar])
-    @article.user_id = current_user.id
+    @article.user_id  = current_user.id
     if @article.update(article_params)
       redirect_to @article
     else
@@ -48,20 +49,28 @@ class ArticlesController < ApplicationController
   end
 
   def follow
-    @articles = Article.find(params[:id])
-    @user = @articles.user.id
-    @article = current_user.id
-    redirect_back(fallback_location: article_path(@article))
+    @article = Article.find(params[:id])
+    follow = Follow.new
+    follow.follower_id = current_user.id
+    follow.followee_id = @article.user_id
+    if follow.save
+      redirect_to :articles
+    else
+      render :show
+    end
   end
 
-  # def unfollow
-  #   @article = User.find(params[:id])
-  #   current_user.followed_users.find_by(followee_id: @article.user.id).destroy
-  #   redirect_back(fallback_location: article_path(@article))
-  # end
+  def unfollow
+    @article = Article.find(params[:id])
+    if current_user.following.find_by(followee_id: @article.id).destroy
+      redirect_back(fallback_location: article_path(@article))
+    else
+      render :show
+    end
+  end
 
   private
     def article_params
-      params.require(:article).permit(:title, :body, :avatar, :status, :followers, :followees)
+      params.require(:article).permit(:title, :body, :avatar, :status, :follow, :unfollow)
     end
 end

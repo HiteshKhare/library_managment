@@ -11,9 +11,29 @@
   <li><%= link_to "Destroy", article_path(@article), method: :delete, data: { confirm: "Are you sure?" } %></li>
   <% if current_user.present? %>
     <% if @article.user.id != current_user.id %>
-      
-        <h5><%= button_to "Follow", follow_user_path(@article.id), method: "POST"  %></h5>
-      
+      <!-- <%# if follow.follower_id != follow.followee_id %> -->
+      <%#byebug%>
+        <% if current_user.following.pluck(:followee_id).include?(@article.user_id ) %>
+          <h5><%= button_to "Unfollow", unfollow_user_path, method: "POST" %></h5>
+        <% else %>
+          <h5><%= button_to "Follow", follow_user_path, method: "POST"  %></h5>
+        <% end%>
+        <% @user ||= current_user %>
+        <div class="stats">
+          <div href="<%= follow_user_path(@user) %>">
+            <strong id="following" class="stat">
+              <%= @user.following.count %>
+            </strong>
+            following
+          </div>
+          <div href="<%= unfollow_user_path(@user) %>">
+            <strong id="followers" class="stat">
+              <%= @user.followers.count %>
+            </strong>
+            followers
+          </div>
+        </div>
+      <%# end %>
     <% end %>
   <% end %>
 </ul>
@@ -22,4 +42,4 @@
 <%= render @article.comments %>
 
 <h2>Add a comment:</h2>
-<%= render 'comments/form' %>
+<%= render 'comments/form' %> 
